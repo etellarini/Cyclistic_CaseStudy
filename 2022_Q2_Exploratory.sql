@@ -1,4 +1,7 @@
--- Quarterly Data Exploration, 2022_Q2 --
+/*
+Cyclistic (Case Study): Quarterly Data Exploration, 2022_Q2
+Skills used: Windows Functions, Aggregate Functions, Converting Data Types
+*/
 
 -- Total Trips: Members vs Casual 
 -- Looking at overall, annual member and casual rider totals
@@ -20,7 +23,7 @@ FROM
 	) t
 
 
--- Avergage Ride Lengths: Members vs Casual  
+-- Average Ride Lengths: Members vs Casual  
 -- Looking at overall, member and casual average ride lengths
 
 SELECT 
@@ -104,14 +107,26 @@ ORDER BY
 -- Rides per day: member and casual
 -- Looking at which days have the highest number of rides
 
-SELECT 
-    day_name, 
-    SUM(CASE WHEN member_casual = 'member' THEN 1 ELSE 0 END) AS member, 
-    SUM(CASE WHEN member_casual = 'casual' THEN 1 ELSE 0 END) AS casual
-FROM 
-    [Cyclistic].[dbo].[TripData_2022_Q2]
-GROUP BY 
-    day_name
+SELECT
+    member_casual,
+    day_name AS [Top Day]
+FROM (
+    SELECT
+        DISTINCT member_casual,
+        day_name,
+        ROW_NUMBER() OVER (PARTITION BY member_casual ORDER BY COUNT(day_name) DESC) rn
+    FROM 
+        [Cyclistic].[dbo].[TripData_2022_Q2] 
+    GROUP BY
+        member_casual,
+        day_name
+) AS subquery
+WHERE
+    rn = 1
+ORDER BY
+    member_casual DESC
+OFFSET 0 ROWS FETCH NEXT 2 ROWS ONLY;
+
 
 
 -- Looking at average ride length per day of week
@@ -175,7 +190,7 @@ ORDER BY
 	AVG_Ride_Length
 
 
--- Looking at AVG ride length per day of week for casual and annual
+-- Looking at Median ride length per day of week for casual and annual
 
 SELECT 
     day_name,
@@ -186,7 +201,7 @@ FROM
     SELECT 
         day_name,
 		member_casual,
-        PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY DATEDIFF(SECOND, '00:00:00', ride_length)) OVER (PARTITION BY day_name) AS median_ride_length_seconds
+        PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY DATEDIFF(SECOND, '00:00:00', ride_length)) OVER (PARTITION BY day_name, member_casual) AS median_ride_length_seconds
     FROM 
         [Cyclistic].[dbo].[TripData_2022_Q2]
     WHERE
@@ -194,15 +209,14 @@ FROM
 	) AS t
 GROUP BY
     day_name,
-	median_ride_length_seconds,
-	member_casual
+	member_casual,
+	CONVERT(TIME, DATEADD(SECOND, median_ride_length_seconds, '00:00:00'))
 ORDER BY
 	member_casual,
-	median_ride_length
+	median_ride_length;
 
 
--- Overall, member, casual
- -- Looking at total number of trips per day 
+-- Looking at total number of trips per day 
 
 SELECT  
 	day_name,
@@ -257,6 +271,7 @@ FROM
 
 
 -- Time of the day rides by member or casual
+
 SELECT 
     time_of_day, 
     SUM(CASE WHEN member_casual = 'member' THEN 1 ELSE 0 END) AS member, 
