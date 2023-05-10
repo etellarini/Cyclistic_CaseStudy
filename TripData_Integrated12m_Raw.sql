@@ -1,7 +1,7 @@
 -- Union of all Tables --
 CREATE TABLE [Cyclistic].[dbo].[TripData_Integrated12m_Raw] (
     [ride_id] nvarchar(255),
-	[rideable_type] nvarchar(255),
+    [rideable_type] nvarchar(255),
     [started_at] datetime,
     [ended_at] datetime,
     [start_station_name] varchar(100),
@@ -10,12 +10,12 @@ CREATE TABLE [Cyclistic].[dbo].[TripData_Integrated12m_Raw] (
 );
 INSERT INTO [Cyclistic].[dbo].[TripData_Integrated12m_Raw] (
     [ride_id], 
-	[rideable_type], 
-	[started_at], 
-	[ended_at], 
-	[start_station_name], 
+    [rideable_type], 
+    [started_at], 
+    [ended_at], 
+    [start_station_name], 
     [end_station_name],
-	[member_casual]
+    [member_casual]
 )
 SELECT * FROM [Cyclistic].[dbo].[2022_04_TripData]
 UNION 
