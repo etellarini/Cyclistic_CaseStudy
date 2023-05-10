@@ -1,10 +1,4 @@
-/*
-Cyclistic (Case Study): Quarterly Data Exploration, 2022_Q2
-Skills used: Windows Functions, Aggregate Functions, Converting Data Types
-*/
-
--- Total Trips: Members vs Casual 
--- Looking at overall, annual member and casual rider totals
+-- Total Trips: Members vs Casual -- Looking at overall, annual member and casual rider totals
 
 SELECT
 	[Total Trips],
