@@ -1,5 +1,4 @@
 -- Median Ride Lengths: Members vs Casual 
--- Looking at median because of outliers influence on AVG
 
 SELECT DISTINCT TOP 2 
 	member_casual,
